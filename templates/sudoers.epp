@@ -1,0 +1,80 @@
+###
+# !!! THIS FILE MANAGED BY PUPPET
+###
+
+# User_Alias
+<% $::sudo_ng::config::user_alias_real.each |String $alias, $alist| { -%>
+<% if $alist =~ Array[String, 1] { -%>
+User_Alias <%= upcase($alias) %> = <%= $alist.sort.join(',') %>
+<% } elsif $alist =~ Hash[String, Array, 1] { -%>
+User_Alias <%= upcase($alias) %> = <%= [$alist['include'].sort, $alist['exclude'].sort.map |$user| { join(['!', $user], '') }].join(',') %>
+<% } else { -%>
+<% } -%>
+<% } -%>
+
+# Host_Alias
+Host_Alias LOCALHOST = <%= $::hostname %>
+<% $::sudo_ng::config::host_alias_real.each |String $alias, $alist| { -%>
+<% if $alist =~ Array[String, 1] { -%>
+Host_Alias <%= upcase($alias) %> = <%= $alist.sort.join(',') %>
+<% } elsif $alist =~ Hash[String, Array, 1] { -%>
+Host_Alias <%= upcase($alias) %> = <%= [$alist['include'].sort, $alist['exclude'].sort.map |$host| { join(['!', $host], '') }].join(',') %>
+<% } else { -%>
+<% } -%>
+<% } -%>
+
+# Runas_Alias
+<% $::sudo_ng::config::runas_alias_real.each |String $alias, $alist| { -%>
+<% if $alist =~ Array[String, 1] { -%>
+Runas_Alias <%= upcase($alias) %> = <%= $alist.sort.join(',') %>
+<% } elsif $alist =~ Hash[String, Array, 1] { -%>
+Runas_Alias <%= upcase($alias) %> = <%= [$alist['include'].sort, $alist['exclude'].sort.map |$runas| { join(['!', $runas], '') }].join(',') %>
+<% } else { -%>
+<% } -%>
+<% } -%>
+
+# Cmnd_Alias
+<% $::sudo_ng::config::cmnd_alias_real.each |$cmndspec| { -%>
+<% $cmndspec.each |String $cmnd, Array $spec| { -%>
+Cmnd_Alias <%= upcase($cmnd) %> = <%= $spec.join(', ') %>
+<% } -%>
+<% } -%>
+
+# Defaults
+Defaults env_delete+="LD_LIBRARY_PATH LD_PRELOAD"
+
+# Defaults: Boolean
+<% $::sudo_ng::config::defbool_real.sort.slice($::sudo_ng::config::slice_size) |$item| { -%>
+Defaults <%= $item.join(',') %>
+<% } -%>
+
+# Defaults: Numeric
+<% $::sudo_ng::config::defnum_real.sort.slice($::sudo_ng::config::slice_size) |$item| { -%>
+Defaults <%= $item.join(',') %>
+<% } -%>
+
+# Defaults: String
+<% $::sudo_ng::config::defstr_real.sort.slice($::sudo_ng::config::slice_size) |$item| { -%>
+Defaults <%= $item.join(',') %>
+<% } -%>
+
+# Defaults: Sequence
+<% $::sudo_ng::config::defseq_real.each |$k, $v| { -%>
+<% $v.sort.slice($::sudo_ng::config::slice_size) |$args| { -%>
+Defaults <%= $k %>=<%= regsubst(String($args.join(' '), '%p'), '\'', '"', 'G') %>
+<% } -%>
+<% } -%>
+
+# Defaults: Map
+<% $::sudo_ng::config::defmap_real.each |$deftype, $v| { -%>
+Defaults<%= $deftype %> <%= $v.sort.join(',') %>
+<% } -%>
+
+# Rules
+<% $::sudo_ng::config::rules_real.each |String $useralias, Array $rules| { -%>
+<% $rules.each |$rulemap| { -%>
+<% $rulemap.each |String $cmnd, String $rule| { -%>
+<%= $useralias %> <%= $rule %> <%= $cmnd %>
+<% } -%>
+<% } -%>
+<% } -%>

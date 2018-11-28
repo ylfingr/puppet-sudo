@@ -1,0 +1,17 @@
+{
+  "name": "sudo",
+  "version": "0.1.0",
+  "author": "Axel Schmalowsky",
+  "summary": "manage sudo configuration with puppet",
+  "license": "Apache-2.0",
+  "source": "https://github.com/ylfingr/puppet-sudo",
+  "project_page": "https://github.com/ylfingr/puppet-sudo",
+  "issues_url": "https://github.com/ylfingr/puppet-sudo/issues",
+  "dependencies": [
+    {"name": "puppetlabs-stdlib", "version_requirement": ">= 4.0.0"}
+  ],
+  "data_provider": null,
+  "tags": [
+    "sudo"
+  ]
+}
